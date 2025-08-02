@@ -1,16 +1,13 @@
 const axios = require("axios");
-
-let authToken = ""; // you will set this after authentication
-
+let authToken = "";
 async function Log(stack, level, pkg, message) {
   if (!authToken) {
     console.error("No auth token set for logger");
     return;
   }
-
   try {
-    await axios.post(
-      "http://20.244.56.144/eva1uation-service/logs",
+    const response = await axios.post(
+      "http://20.244.56.144/evaluation-service/logs",
       {
         stack,
         level,
@@ -20,16 +17,16 @@ async function Log(stack, level, pkg, message) {
       {
         headers: {
           Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
         },
       }
     );
+    console.log("Log sent:", response.data.message);
   } catch (error) {
-    console.error("Log error", error.message);
+    console.error("Failed to send log:", error.message);
   }
 }
-
 function setAuthToken(token) {
   authToken = token;
 }
-
 module.exports = { Log, setAuthToken };
